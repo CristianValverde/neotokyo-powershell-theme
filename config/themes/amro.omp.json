@@ -1,0 +1,82 @@
+{
+    "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
+    "version": 4,
+    "blocks": [
+        {
+            "type": "prompt",
+            "alignment": "left",
+            "segments": [
+                {
+                    "type": "session",
+                    "style": "plain",
+                    "foreground": "#00F5D4",
+                    "template": "\ueb99 {{ .UserName }}"
+                },
+                {
+                    "type": "path",
+                    "style": "plain",
+                    "foreground": "#5B8CFF",
+                    "properties": {
+                        "style": "full",
+                        "folder_separator_icon": "/",
+                        "mapped_locations_enabled": true
+                     },
+                     "template": " \uf07c  {{ .Path }} "
+                },
+                {
+                    "type": "git",
+                    "style": "plain",
+                    "foreground": "#9D4EDD",
+                    "properties": {
+                        "fetch_upstream_icon": true
+                    },
+                    "template": "\uea84 {{ .HEAD }}{{ if gt .StashCount 0 }} \ueb43 {{ .StashCount }}{{ end }} "
+                }
+            ]
+        },
+        {
+            "type": "rprompt",
+            "alignment": "right",
+            "segments": [
+                {
+                    "type": "time",
+                    "style": "plain",
+                    "foreground": "#8BE9FD",
+                    "properties": {
+                        "time_format": "15:04:05"
+                    },
+                    "template": " \uf017 {{ .CurrentDate | date .Format }} "
+                },
+                {
+                    "type": "executiontime",
+                    "style": "plain",
+                    "foreground": "#FFB86C",
+                    "properties": {
+                        "threshold": 300,
+                        "style": "austin"
+                    },
+                    "template": " \uf252 {{ .FormattedMs }} "
+                }
+            ]
+        },
+        {
+            "type": "prompt",
+            "alignment": "left",
+            "newline": true,
+            "segments": [
+                {
+                    "type": "root",
+                    "style": "plain",
+                    "foreground": "#cd5e42",
+                    "template": "\ue3bf "
+                },
+                {
+                    "type": "text",
+                    "style": "plain",
+                    "foreground": "#FF79C6",
+                    "template": "# "
+                }
+            ]
+        }
+    ]
+}
