@@ -1,6 +1,6 @@
 # 🌆 NeoTokyo PowerShell Theme
 
-A beautiful, modern PowerShell terminal setup inspired by the NeoTokyo aesthetic — dark blues, neon cyans, and glowing purples.
+A beautiful, modern PowerShell terminal setup inspired by the NeoTokyo aesthetic — pink, cyan, ice blue, purple and other neon colours pastelized.
 
 ![NeoTokyo Theme Preview](https://img.shields.io/badge/PowerShell-7.6%2B-blue?logo=powershell) ![Platform](https://img.shields.io/badge/Platform-Windows-lightgrey?logo=windows) ![License](https://img.shields.io/badge/License-MIT-green)
 
