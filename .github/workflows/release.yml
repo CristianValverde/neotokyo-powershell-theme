@@ -1,0 +1,81 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install ps2exe
+        shell: pwsh
+        run: Install-Module ps2exe -Scope CurrentUser -Force -Repository PSGallery
+
+      - name: Build NeoTokyo-Setup.exe
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}" -replace '^v', ''
+          Invoke-PS2EXE `
+            -InputFile  .\install.ps1 `
+            -OutputFile .\NeoTokyo-Setup.exe `
+            -requireAdmin `
+            -noConsole:$false `
+            -title       "NeoTokyo Terminal Setup" `
+            -description "NeoTokyo PowerShell Terminal Theme Installer" `
+            -company     "CristianValverde" `
+            -version     $version `
+            -iconFile    $null
+
+      - name: Build NeoTokyo-Uninstall.exe
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}" -replace '^v', ''
+          Invoke-PS2EXE `
+            -InputFile  .\uninstall.ps1 `
+            -OutputFile .\NeoTokyo-Uninstall.exe `
+            -requireAdmin `
+            -noConsole:$false `
+            -title       "NeoTokyo Terminal Uninstaller" `
+            -description "NeoTokyo PowerShell Terminal Theme Uninstaller" `
+            -company     "CristianValverde" `
+            -version     $version `
+            -iconFile    $null
+
+      - name: Create release zip
+        shell: pwsh
+        run: |
+          $tag     = "${{ github.ref_name }}"
+          $zipName = "NeoTokyo-Setup-$tag.zip"
+
+          $include = @(
+            "NeoTokyo-Setup.exe",
+            "NeoTokyo-Uninstall.exe",
+            "install.bat",
+            "uninstall.bat",
+            "install.ps1",
+            "uninstall.ps1",
+            "config",
+            "fonts"
+          )
+
+          Compress-Archive -Path $include -DestinationPath $zipName -Force
+          Write-Host "Created: $zipName"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "NeoTokyo Terminal Theme ${{ github.ref_name }}"
+          generate_release_notes: true
+          files: |
+            NeoTokyo-Setup-${{ github.ref_name }}.zip
+            NeoTokyo-Setup.exe
+            NeoTokyo-Uninstall.exe
