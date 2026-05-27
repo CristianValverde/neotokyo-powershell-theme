@@ -43,9 +43,16 @@ $ErrorActionPreference = "Stop"
 $ProgressPreference = "SilentlyContinue"
 
 $script:Config = @{
-    ProfilePath = $PROFILE
-    SettingsPath = "$env:LOCALAPPDATA\Microsoft\Windows Terminal\settings.json"
-    ThemePath = "$env:USERPROFILE\Documents\PowerShell\themes"
+    ProfilePath   = $PROFILE
+    SettingsPath  = $(
+        # Same detection logic as the installer: prefer the Store path
+        $storePath   = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
+        $legacyPath  = "$env:LOCALAPPDATA\Microsoft\Windows Terminal\settings.json"
+        if     (Test-Path $storePath)  { $storePath  }
+        elseif (Test-Path $legacyPath) { $legacyPath }
+        else   { $storePath }   # default to Store path even if not yet created
+    )
+    ThemePath     = "$env:USERPROFILE\Documents\PowerShell\themes"
     BackupPattern = "$env:USERPROFILE\PowerShell_Backup_*"
 }
 
