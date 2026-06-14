@@ -9,7 +9,7 @@
                 {
                     "type": "session",
                     "style": "plain",
-                    "foreground": "#00F5D4",
+                    "foreground": "#94E4D6",
                     "template": "\ueb99 {{ .UserName }}"
                 },
                 {
@@ -41,7 +41,7 @@
                 {
                     "type": "time",
                     "style": "plain",
-                    "foreground": "#8BE9FD",
+                    "foreground": "#A7E7F2",
                     "properties": {
                         "time_format": "15:04:05"
                     },
@@ -50,7 +50,7 @@
                 {
                     "type": "executiontime",
                     "style": "plain",
-                    "foreground": "#FFB86C",
+                    "foreground": "#F9B98C",
                     "properties": {
                         "threshold": 300,
                         "style": "austin"
@@ -67,13 +67,13 @@
                 {
                     "type": "root",
                     "style": "plain",
-                    "foreground": "#cd5e42",
+                    "foreground": "#E6A07E",
                     "template": "\ue3bf "
                 },
                 {
                     "type": "text",
                     "style": "plain",
-                    "foreground": "#FF79C6",
+                    "foreground": "#F4A3C4",
                     "template": "# "
                 }
             ]

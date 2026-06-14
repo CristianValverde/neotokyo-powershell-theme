@@ -33,28 +33,28 @@ Set-PSReadLineOption -MaximumHistoryCount 50000
 
 # PSReadLine Colors
 Set-PSReadLineOption -Colors @{
-    Command          = '#FF79C6'
-    Operator         = '#FF79C6'
-    Parameter        = '#00F5D4'
-    Member           = '#00F5D4'
+    Command          = '#F4A3C4'
+    Operator         = '#F4A3C4'
+    Parameter        = '#94E4D6'
+    Member           = '#94E4D6'
     Variable         = '#9D4EDD'
     String           = '#5B8CFF'
-    Number           = '#FFB86C'
-    Type             = '#8BE9FD'
-    Keyword          = '#8BE9FD'
-    Default          = '#8BE9FD'
+    Number           = '#F9B98C'
+    Type             = '#A7E7F2'
+    Keyword          = '#A7E7F2'
+    Default          = '#A7E7F2'
     Comment          = '#6A9955'
     InlinePrediction = '#6A9955'
-    Error            = '#FF5F87'
+    Error            = '#F2A0BE'
 }
 
 # ============================================
 # ANSI Formatting
 # ============================================
 
-$PSStyle.Formatting.Error   = "`e[38;2;255;95;135m"
-$PSStyle.Formatting.Warning = "`e[38;2;255;184;108m"
-$PSStyle.Formatting.Verbose = "`e[38;2;139;233;253m"
+$PSStyle.Formatting.Error   = "`e[38;2;244;163;196m"
+$PSStyle.Formatting.Warning = "`e[38;2;249;185;140m"
+$PSStyle.Formatting.Verbose = "`e[38;2;167;231;242m"
 $PSStyle.Formatting.Debug   = "`e[38;2;157;78;221m"
 
 # ============================================
