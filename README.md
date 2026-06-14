@@ -490,8 +490,8 @@ Find the `"schemes"` section and edit colors:
 {
     "name": "NeoTokyo",
     "background": "#0B1020",    // Change background
-    "foreground": "#8BE9FD",    // Change text color
-    "cursorColor": "#FF79C6",   // Change cursor
+    "foreground": "#A7E7F2",    // Change text color
+    "cursorColor": "#F4A3C4",   // Change cursor
     // ... modify other colors
 }
 ```
