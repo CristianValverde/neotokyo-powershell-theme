@@ -1,4 +1,4 @@
-# 🚀 PowerShell Terminal Setup - AMRO Theme
+# 🚀 NeoTokyo PowerShell Theme (AMRO)
 
 [![PowerShell](https://img.shields.io/badge/PowerShell-7.6+-blue.svg)](https://github.com/PowerShell/PowerShell)
 [![Windows Terminal](https://img.shields.io/badge/Windows%20Terminal-1.12+-green.svg)](https://github.com/microsoft/terminal)
@@ -8,15 +8,6 @@
 
 A beautiful, modern, and fully automated PowerShell terminal setup with the custom AMRO theme. Transform your terminal experience with a single command!
 
-## 📸 Screenshots
-
-> **Note:** Add screenshots here showing your terminal in action
-
-```
-[Screenshot 1: Main prompt with path and git status]
-[Screenshot 2: Command execution with timing]
-[Screenshot 3: Full terminal window with transparency]
-```
 
 ## ✨ Features
 
@@ -46,8 +37,8 @@ A beautiful, modern, and fully automated PowerShell terminal setup with the cust
 
 1. **Download** this repository:
    ```powershell
-   git clone https://github.com/yourusername/powershell-setup.git
-   cd powershell-setup
+   git clone https://github.com/CristianValverde/neotokyo-powershell-theme.git
+   cd neotokyo-powershell-theme
    ```
 
 2. **Run** the installer:
@@ -699,10 +690,9 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 Need help? Here's how to get support:
 
-- 📖 **Documentation:** Check this README and the [docs/](docs/) folder
-- 🐛 **Bug Reports:** [Open an issue](https://github.com/yourusername/powershell-setup/issues)
-- 💡 **Feature Requests:** [Open an issue](https://github.com/yourusername/powershell-setup/issues)
-- 💬 **Discussions:** [GitHub Discussions](https://github.com/yourusername/powershell-setup/discussions)
+- 📖 **Documentation:** Check this README
+- 🐛 **Bug Reports:** [Open an issue](https://github.com/CristianValverde/neotokyo-powershell-theme/issues)
+- 💡 **Feature Requests:** [Open an issue](https://github.com/CristianValverde/neotokyo-powershell-theme/issues)
 
 ---
 
@@ -713,7 +703,6 @@ If you found this project helpful, please consider:
 - ⭐ Starring the repository
 - 🐦 Sharing it on social media
 - 🤝 Contributing improvements
-- ☕ [Buying me a coffee](https://buymeacoffee.com/yourusername) (optional)
 
 ---
 
@@ -731,16 +720,10 @@ Future improvements planned:
 
 ---
 
-## 📝 Changelog
-
-See [CHANGELOG.md](CHANGELOG.md) for a list of changes in each version.
-
----
-
 <p align="center">
-  Made with ❤️ by the community
+  Made with ❤️ by [Cristian de Andrade Valverde](https://github.com/CristianValverde)
 </p>
 
 <p align="center">
-  <a href="#-powershell-terminal-setup---amro-theme">Back to top ↑</a>
+  <a href="#-neotokyo-powershell-theme-amro">Back to top ↑</a>
 </p>
