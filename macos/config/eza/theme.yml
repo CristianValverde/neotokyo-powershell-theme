@@ -1,0 +1,25 @@
+filekinds:
+  normal: {foreground: '#8BE9FD'}
+  directory: {foreground: '#5B8CFF', is_bold: true}
+  symlink: {foreground: '#00F5D4'}
+  executable: {foreground: '#5AF78E'}
+perms:
+  user_read: {foreground: '#8BE9FD'}
+  user_write: {foreground: '#FF79C6'}
+  user_execute_file: {foreground: '#5AF78E'}
+  user_execute_other: {foreground: '#5AF78E'}
+  group_read: {foreground: '#6B7089'}
+  group_write: {foreground: '#6B7089'}
+  group_execute: {foreground: '#6B7089'}
+  other_read: {foreground: '#6B7089'}
+  other_write: {foreground: '#6B7089'}
+  other_execute: {foreground: '#6B7089'}
+extensions:
+  py: {filename: {foreground: '#FFD866'}}
+  ps1: {filename: {foreground: '#5AA9FF'}}
+  sh: {filename: {foreground: '#5AF78E'}}
+  zsh: {filename: {foreground: '#5AF78E'}}
+  json: {filename: {foreground: '#FFB86C'}}
+  yml: {filename: {foreground: '#BD93F9'}}
+  yaml: {filename: {foreground: '#BD93F9'}}
+  md: {filename: {foreground: '#00F5D4'}}

@@ -1,0 +1,41 @@
+NEOTOKYO · MAC
+
+→                  Aceptar la sugerencia completa al final de la línea
+Option izquierda+F Aceptar una palabra de la sugerencia
+↑ / ↓              Buscar en el historial por el comienzo escrito
+Ctrl+R             Buscar en el historial con fzf; Enter selecciona, no ejecuta
+Tab / Shift+Tab    Completar comandos, opciones y rutas; recorrer el menú
+Ctrl+T             Buscar e insertar un archivo con fzf
+Option izquierda+C Buscar una carpeta y entrar con fzf
+Shift+Enter        Insertar una línea sin ejecutar (perfil NeoTokyo de iTerm2)
+Ctrl+L             Limpiar la pantalla
+Ctrl+Z / Option+Z  Deshacer / rehacer la edición de la línea
+Ctrl+← / Ctrl+→    Moverse por palabras si macOS no captura el atajo
+Option+B / Option+F Alternativa para moverse por palabras
+Ctrl+A / Ctrl+E    Ir al principio / final de la línea
+Ctrl+W             Borrar la palabra anterior
+Cmd+C / Cmd+V      Copiar / pegar en iTerm2
+Ctrl+C             Interrumpir el comando
+
+ll / la / lt       Archivos con iconos; detalles / ocultos / árbol de dos niveles
+catc archivo       Mostrar un archivo con colores
+z nombre           Saltar a una carpeta visitada; zi abre un selector
+.. / ... / ....    Subir uno, dos o tres niveles
+mkcd "mi carpeta"  Crear una carpeta y entrar
+docs / downloads / desktop / repos
+                   Ir a Documents, Downloads, Desktop o ~/repos
+gs ga gc gp gl gd gb gco gpull
+                   Atajos de Git; aceptan argumentos adicionales
+k kgp kgs kgd kdp   Atajos de kubectl si está instalado
+d dc dps dpsa di    Atajos de Docker si está instalado
+pwdc               Copiar la ruta actual al portapapeles
+ex [ruta]          Abrir Finder, un archivo o una carpeta
+ff texto           Buscar nombres de archivo con ripgrep
+sysinfo            Versión de macOS, arquitectura y RAM
+hist / histall     Últimas entradas / historial cargado en la sesión
+edit-profile       Editar tus ajustes personales en local.zsh
+reload             Abrir una sesión Zsh nueva con la configuración actualizada
+neotokyo-doctor    Comprobar herramientas y ubicación del historial
+
+Option derecha conserva los caracteres especiales del teclado español.
+Un comando que empieza con un espacio no se guarda en el historial de Zsh.

@@ -4,10 +4,30 @@
 [![Windows Terminal](https://img.shields.io/badge/Windows%20Terminal-1.12+-green.svg)](https://github.com/microsoft/terminal)
 [![Oh My Posh](https://img.shields.io/badge/Oh%20My%20Posh-Latest-orange.svg)](https://ohmyposh.dev/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/Platform-Windows%2010%2F11-lightgrey.svg)]()
+[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS-lightgrey.svg)]()
 
-A beautiful, modern, and fully automated PowerShell terminal setup with the custom AMRO theme. Transform your terminal experience with a single command!
+NeoTokyo brings the custom AMRO prompt and a NeoTokyo color palette to **Windows Terminal + PowerShell** and **macOS + iTerm2 + Zsh**. Choose the installation guide for your platform below.
 
+
+## Choose your platform
+
+- **Windows:** follow the PowerShell instructions below.
+- **macOS:** see the [macOS installation and troubleshooting guide](macos/README.md). It uses Zsh and iTerm2, with history suggestions, icons, syntax highlighting and the NeoTokyo palette. Tested visually on a MacBook Pro M1 Max.
+
+For macOS, clone this repository, quit iTerm2 completely and run the installer from macOS Terminal:
+
+```sh
+cd neotokyo-powershell-theme/macos
+bash install.sh
+```
+
+The installer detects Homebrew and runs its official interactive installer if needed, then installs iTerm2 through Homebrew if needed. Internet access is required; Homebrew may request confirmation, administrator authentication and Apple Command Line Tools. Open iTerm2: NeoTokyo is set as the default profile. If iTerm2 restores an older window, open a new one. See the guide for prerequisites, shortcuts, backups and troubleshooting.
+
+The macOS edition preserves the palette tested on the M1 Max; the Windows edition currently uses a softer pastel variant. The remaining sections on this page describe the Windows edition.
+
+## Windows edition
+
+The Windows instructions below apply to PowerShell and Windows Terminal. For macOS, use the [macOS guide](macos/README.md).
 
 ## ✨ Features
 
@@ -643,7 +663,7 @@ Found a bug? Have a suggestion?
 2. Create a new issue with:
    - Clear description
    - Steps to reproduce
-   - Your system info (Windows version, PowerShell version)
+   - Your operating system version, terminal and shell versions
    - Screenshots if applicable
 
 ### Submitting Changes
@@ -658,8 +678,8 @@ Found a bug? Have a suggestion?
 
 - Use clear, descriptive variable names
 - Comment complex logic
-- Follow PowerShell best practices
-- Test on clean Windows installation if possible
+- Follow PowerShell or Zsh best practices as appropriate
+- Test on the affected platform and describe any limitations
 
 ---
 
@@ -710,7 +730,8 @@ If you found this project helpful, please consider:
 
 Future improvements planned:
 
-- [ ] Linux/macOS support
+- [x] macOS support with iTerm2 and Zsh
+- [ ] Linux support
 - [ ] GUI installer
 - [ ] More theme variants
 - [ ] Integration with popular dev tools

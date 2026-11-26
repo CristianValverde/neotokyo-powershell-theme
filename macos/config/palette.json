@@ -1,0 +1,23 @@
+{
+  "name": "NeoTokyo",
+  "background": "#0B1020",
+  "foreground": "#8BE9FD",
+  "cursorColor": "#FF79C6",
+  "selectionBackground": "#A1FFD6",
+  "black": "#15161E",
+  "brightBlack": "#6B7089",
+  "red": "#FF5C8A",
+  "brightRed": "#FF7DA3",
+  "green": "#5AF78E",
+  "brightGreen": "#7CFFB2",
+  "yellow": "#FFD866",
+  "brightYellow": "#FFE38C",
+  "blue": "#5AA9FF",
+  "brightBlue": "#7DC1FF",
+  "purple": "#BD93F9",
+  "brightPurple": "#D6ACFF",
+  "cyan": "#8BE9FD",
+  "brightCyan": "#A4FFFF",
+  "white": "#BFC7D5",
+  "brightWhite": "#FFFFFF"
+}
