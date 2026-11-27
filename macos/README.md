@@ -25,6 +25,27 @@ La migración de **NeoTokyo PowerShell Theme** a **Zsh + iTerm2**, con herramien
 
 El instalador detecta iTerm2 y, si no lo encuentra, lo instala mediante Homebrew. Guarda el perfil predeterminado anterior y selecciona NeoTokyo para las ventanas nuevas. Añade NeoTokyo a `.zshrc`; también tendrás las funciones al abrir otras aplicaciones que usen Zsh interactivo. El aspecto completo está configurado en el perfil de iTerm2.
 
+## Instalación manual en macOS
+
+Estos pasos están pensados para quien quiere integrar la configuración por su cuenta. El instalador automatizado también hace copias de seguridad y configura el perfil predeterminado. En los comandos siguientes, parte de la carpeta `macos` de este repositorio o de la carpeta descomprimida del release.
+
+1. Instala [Homebrew](https://brew.sh/) y [iTerm2](https://iterm2.com/downloads.html) siguiendo sus instrucciones oficiales. En Apple Silicon, comprueba que se usa Homebrew de `/opt/homebrew`. Instala las herramientas:
+
+   ```sh
+   brew install jandedobbeleer/oh-my-posh/oh-my-posh zsh-autosuggestions zsh-syntax-highlighting zsh-completions fzf zoxide eza bat ripgrep
+   ```
+
+2. Instala las cuatro fuentes `fonts/MonofokiNerdFont-*.ttf` con Catálogo Tipográfico. Cierra iTerm2 con ⌘Q y vuelve a abrirlo después de instalar las fuentes.
+3. Revisa y guarda una copia de tus ajustes existentes. Copia `config/neotokyo.zsh`, `config/neotokyo.omp.json`, `config/palette.json` y `config/shortcuts.txt` a `${XDG_CONFIG_HOME:-$HOME/.config}/neotokyo/`; copia `config/eza/theme.yml` a su subcarpeta `eza/`. Si ya tienes archivos con esos nombres, evita sobrescribirlos sin revisarlos.
+4. Añade esta línea al final de `${ZDOTDIR:-$HOME}/.zshrc`, conservando su contenido:
+
+   ```zsh
+   [[ -r "${XDG_CONFIG_HOME:-$HOME/.config}/neotokyo/neotokyo.zsh" ]] && source "${XDG_CONFIG_HOME:-$HOME/.config}/neotokyo/neotokyo.zsh"
+   ```
+
+5. Copia `config/iterm2/NeoTokyo.json` a `~/Library/Application Support/iTerm2/DynamicProfiles/`. Si ya existe un archivo con ese nombre, haz una copia primero. En iTerm2, selecciona **Profiles → NeoTokyo** y, para las ventanas nuevas, **Settings → Profiles → NeoTokyo → Other Actions → Set as Default**.
+6. Abre una ventana nueva y sigue las [comprobaciones rápidas](#comprobaciones-rápidas). Para deshacer una instalación manual, retira la línea añadida a `.zshrc` y el perfil dinámico después de seleccionar otro perfil predeterminado; conserva las copias y cualquier archivo personal.
+
 ## Qué conserva y qué mejora
 
 | Función de la consola original | Versión Mac |
@@ -105,6 +126,14 @@ El perfil de iTerm2 está en:
 Es un **perfil dinámico**: para cambios permanentes de fuente, opacidad o colores, edita ese archivo o duplica el perfil en iTerm2 y personaliza la copia. Reinstalar actualiza el perfil dinámico y deja una copia de su versión anterior. En iTerm2 la opción `Transparency` es `0.18`, equivalente a 82 % de opacidad. Para un fondo sólido utiliza `0`; para reducir un poco la transparencia, prueba `0.10` (90 % de opacidad).
 
 También se incluye `config/iterm2/NeoTokyo.itermcolors`, importable desde **Settings → Profiles → Colors → Color Presets → Import** para aplicar únicamente la paleta a otro perfil.
+
+### Personalizar el prompt y los atajos
+
+- **Prompt e iconos:** edita `${XDG_CONFIG_HOME:-$HOME/.config}/neotokyo/neotokyo.omp.json` y ejecuta `reload`. Los iconos necesitan una Nerd Font activa. El instalador sustituye ese archivo al reinstalar; guarda una copia de tus cambios.
+- **Funciones y alias:** añade tus ajustes a `local.zsh` mediante `edit-profile`; el instalador conserva ese archivo. Por ejemplo, `alias proyectos='cd ~/Projects'`.
+- **Teclas:** añade tus asignaciones Zsh a `local.zsh`, por ejemplo `bindkey '^P' up-line-or-beginning-search`. Las teclas que dependen del terminal, como Shift+Enter, se configuran en el perfil de iTerm2; una copia del perfil permite conservar cambios visuales y de teclas al reinstalar.
+- **Colores y transparencia:** el perfil dinámico determina fuente, paleta y transparencia. Edita el JSON del perfil o duplica NeoTokyo en iTerm2 y modifica la copia en Settings. El valor predeterminado `Transparency: 0.18` corresponde a 82 % de opacidad.
+- **Restauración:** el instalador guarda copias en `${XDG_STATE_HOME:-$HOME/.local/state}/neotokyo/backups`; `bash uninstall.sh` desactiva NeoTokyo y trata de restaurar el perfil anterior. No desinstala Homebrew ni las demás herramientas.
 
 El tema de `bat` es Dracula, próximo a nuestros colores. El prompt, los listados de eza, fzf y el resaltado de Zsh sí tienen configuración NeoTokyo propia.
 
