@@ -39,14 +39,20 @@ param(
 $ErrorActionPreference = "Stop"
 $ProgressPreference = "SilentlyContinue"
 
+# PS2EXE does not provide $PSScriptRoot. Resolve sibling assets relative to the EXE.
+$sourceRoot = if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent ([Diagnostics.Process]::GetCurrentProcess().MainModule.FileName) }
+$documentsPath = [Environment]::GetFolderPath('MyDocuments')
+if (-not $documentsPath) { $documentsPath = Join-Path $env:USERPROFILE 'Documents' }
+$powerShellDirectory = Join-Path $documentsPath 'PowerShell'
+
 $script:Config = @{
-    RepoPath = $PSScriptRoot
+    RepoPath = $sourceRoot
     BackupPath = Join-Path $env:USERPROFILE "PowerShell_Backup_$(Get-Date -Format 'yyyyMMdd_HHmmss')"
-    ProfilePath = $PROFILE
+    ProfilePath = Join-Path $powerShellDirectory "Microsoft.PowerShell_profile.ps1"
     SettingsPath = $null  # Will be resolved dynamically by Get-WindowsTerminalSettingsPath
-    ThemePath = "$env:USERPROFILE\Documents\PowerShell\themes"
-    FontsPath = Join-Path $PSScriptRoot "fonts"
-    EnvPath = Join-Path $PSScriptRoot ".env"
+    ThemePath = Join-Path $powerShellDirectory "themes"
+    FontsPath = Join-Path $sourceRoot "fonts"
+    EnvPath = Join-Path $sourceRoot ".env"
     MinPowerShellVersion = "7.6.0"
 }
 
@@ -295,10 +301,11 @@ function Test-Git {
 function Test-NerdFont {
     param([string]$FontName = "Monofoki")
 
-    $fonts = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts" -ErrorAction SilentlyContinue
-    $fontInstalled = $fonts.PSObject.Properties | Where-Object { $_.Name -like "*$FontName*" }
-
-    return $null -ne $fontInstalled
+    foreach ($key in @('HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts', 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts')) {
+        $fonts = Get-ItemProperty $key -ErrorAction SilentlyContinue
+        if ($fonts -and ($fonts.PSObject.Properties | Where-Object { $_.Name -like "*$FontName*" })) { return $true }
+    }
+    return $false
 }
 
 function Get-WindowsTerminalSettingsPath {
@@ -384,6 +391,7 @@ function Get-AllPowerShellVersions {
     $candidates = [System.Collections.Generic.List[string]]::new()
 
     # 1. Store-installed PowerShell (Microsoft.PowerShell + Microsoft.PowerShellPreview)
+    $pkgs = @()
     try {
         $pkgs = @(Get-AppxPackage -Name "Microsoft.PowerShell"        -AllUsers -ErrorAction SilentlyContinue) +
                 @(Get-AppxPackage -Name "Microsoft.PowerShellPreview"  -AllUsers -ErrorAction SilentlyContinue)
@@ -408,7 +416,10 @@ function Get-AllPowerShellVersions {
 
     # 3. PATH fallback (catches anything not found above)
     $pathPwsh = Get-Command pwsh -ErrorAction SilentlyContinue
-    if ($pathPwsh) { $candidates.Add($pathPwsh.Source) }
+    # The Store execution alias points at an already discovered Store package.
+    if ($pathPwsh -and -not ($pkgs.Count -gt 0 -and $pathPwsh.Source -like "*$env:LOCALAPPDATA\Microsoft\WindowsApps\pwsh.exe")) {
+        $candidates.Add($pathPwsh.Source)
+    }
 
     # Probe each candidate, deduplicated by resolved path
     foreach ($exePath in $candidates) {
@@ -447,31 +458,32 @@ function Install-PowerShell7 {
         $winget = Get-Command winget -ErrorAction SilentlyContinue
         if ($winget) {
             Write-Info "Using winget to install PowerShell..."
-            winget install Microsoft.PowerShell --silent --accept-source-agreements --accept-package-agreements
+            winget install --id Microsoft.PowerShell --exact --source winget --silent --accept-source-agreements --accept-package-agreements
+            if ($LASTEXITCODE -ne 0) { throw "winget failed to install Microsoft.PowerShell (exit code $LASTEXITCODE)." }
         }
         else {
             # Fallback to direct download
             Write-Info "Downloading PowerShell installer..."
-            $installerUrl = "https://github.com/PowerShell/PowerShell/releases/latest/download/PowerShell-7-win-x64.msi"
-            $installerPath = "$env:TEMP\PowerShell-7-win-x64.msi"
-
-            Invoke-WebRequest -Uri $installerUrl -OutFile $installerPath
-
+            $architecture = if ($env:PROCESSOR_ARCHITECTURE -eq 'ARM64' -or $env:PROCESSOR_ARCHITEW6432 -eq 'ARM64') { 'arm64' } else { 'x64' }
+            $release = Invoke-RestMethod -Uri 'https://api.github.com/repos/PowerShell/PowerShell/releases/latest' -ErrorAction Stop
+            $asset = @($release.assets | Where-Object { $_.name -match "^PowerShell-.*-win-$architecture\.msi$" }) | Select-Object -First 1
+            if (-not $asset) { throw "No $architecture MSI is available for the latest PowerShell release. Install PowerShell using Microsoft's instructions." }
+            $installerPath = Join-Path $env:TEMP $asset.name
+            Invoke-WebRequest -Uri $asset.browser_download_url -OutFile $installerPath -ErrorAction Stop
             Write-Info "Installing PowerShell 7..."
-            Start-Process msiexec.exe -ArgumentList "/i `"$installerPath`" /quiet /norestart" -Wait
-
+            $process = Start-Process msiexec.exe -ArgumentList "/i `"$installerPath`" /quiet /norestart" -Wait -PassThru
+            if ($process.ExitCode -notin @(0, 3010)) { throw "PowerShell MSI failed (exit code $($process.ExitCode))." }
             Remove-Item $installerPath -Force
         }
 
         Write-Success "PowerShell 7 installed successfully"
         Write-Warning "Please restart this installer in PowerShell 7 to continue"
         Write-Host ""
-        Write-Host "Run: pwsh -File `"$PSCommandPath`"" -ForegroundColor Yellow
+        Write-Host "Close and reopen this installer after PowerShell has been installed." -ForegroundColor Yellow
         exit 0
     }
     catch {
-        Write-Error "Failed to install PowerShell 7: $_"
-        exit 1
+        throw "Failed to install PowerShell 7: $_"
     }
 }
 
@@ -482,7 +494,8 @@ function Install-WindowsTerminal {
         $winget = Get-Command winget -ErrorAction SilentlyContinue
         if ($winget) {
             Write-Info "Using winget to install Windows Terminal..."
-            winget install Microsoft.WindowsTerminal --silent --accept-source-agreements --accept-package-agreements
+            winget install --id Microsoft.WindowsTerminal --exact --source winget --silent --accept-source-agreements --accept-package-agreements
+            if ($LASTEXITCODE -ne 0) { throw "winget failed to install Microsoft.WindowsTerminal (exit code $LASTEXITCODE)." }
         }
         else {
             Write-Info "Opening Microsoft Store to install Windows Terminal..."
@@ -494,8 +507,7 @@ function Install-WindowsTerminal {
         Write-Success "Windows Terminal installed successfully"
     }
     catch {
-        Write-Error "Failed to install Windows Terminal: $_"
-        exit 1
+        throw "Failed to install Windows Terminal: $_"
     }
 }
 
@@ -506,7 +518,8 @@ function Install-OhMyPosh {
         $winget = Get-Command winget -ErrorAction SilentlyContinue
         if ($winget) {
             Write-Info "Using winget to install Oh My Posh..."
-            winget install JanDeDobbeleer.OhMyPosh --silent --accept-source-agreements --accept-package-agreements
+            winget install --id JanDeDobbeleer.OhMyPosh --exact --source winget --silent --accept-source-agreements --accept-package-agreements
+            if ($LASTEXITCODE -ne 0) { throw "winget failed to install JanDeDobbeleer.OhMyPosh (exit code $LASTEXITCODE)." }
         }
         else {
             Write-Info "Using PowerShell to install Oh My Posh..."
@@ -520,8 +533,7 @@ function Install-OhMyPosh {
         Write-Success "Oh My Posh installed successfully"
     }
     catch {
-        Write-Error "Failed to install Oh My Posh: $_"
-        exit 1
+        throw "Failed to install Oh My Posh: $_"
     }
 }
 
@@ -530,11 +542,12 @@ function Install-TerminalIcons {
 
     try {
         Write-Info "Installing Terminal-Icons from PowerShell Gallery..."
+        Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Scope CurrentUser -Force | Out-Null
         Install-Module -Name Terminal-Icons -Scope CurrentUser -Force -SkipPublisherCheck
         Write-Success "Terminal-Icons installed successfully"
     }
     catch {
-        Write-Error "Failed to install Terminal-Icons: $_"
+        throw "Failed to install Terminal-Icons: $_"
     }
 }
 
@@ -545,37 +558,44 @@ function Install-MonofokiFont {
         $fontPath = Join-Path $script:Config.FontsPath "MonofokiNerdFont-Regular.ttf"
 
         if (-not (Test-Path $fontPath)) {
-            Write-Warning "Font file not found at: $fontPath"
-            Write-Info "Please ensure the fonts folder contains Monofoki Nerd Font"
-            return
+            throw "Font file not found: $fontPath. Extract the full release ZIP before running the installer."
         }
 
-        # Check if already installed
-        if (Test-NerdFont -FontName "Monofoki") {
-            Write-Success "Monofoki Nerd Font is already installed"
-            return
-        }
-
-        Write-Info "Installing Monofoki Nerd Font..."
-
-        # Copy font to Windows Fonts folder
-        $fontsFolder = "$env:LOCALAPPDATA\Microsoft\Windows\Fonts"
+        # Per-user fonts require an absolute path in the registry. Register even
+        # when the file already exists, to repair incomplete prior installations.
+        $fontsFolder = Join-Path $env:LOCALAPPDATA 'Microsoft\Windows\Fonts'
         if (-not (Test-Path $fontsFolder)) {
             New-Item -ItemType Directory -Path $fontsFolder -Force | Out-Null
         }
+        $installedFont = Join-Path $fontsFolder (Split-Path $fontPath -Leaf)
+        Copy-Item $fontPath -Destination $installedFont -Force
+        $fontKey = 'HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts'
+        New-Item -Path $fontKey -Force | Out-Null
+        New-ItemProperty -Path $fontKey -Name 'Monofoki Nerd Font (TrueType)' `
+            -Value $installedFont -PropertyType String -Force | Out-Null
 
-        Copy-Item $fontPath -Destination $fontsFolder -Force
-
-        # Register font in registry
-        $fontName = "Monofoki Nerd Font (TrueType)"
-        $fontFile = Split-Path $fontPath -Leaf
-        New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts" `
-            -Name $fontName -Value $fontFile -PropertyType String -Force | Out-Null
+        if (-not ('NeoTokyoFontResource' -as [type])) {
+            Add-Type @'
+using System;
+using System.Runtime.InteropServices;
+public static class NeoTokyoFontResource {
+    [DllImport("gdi32.dll", CharSet=CharSet.Unicode, SetLastError=true)]
+    public static extern int AddFontResourceEx(string path, uint flags, IntPtr reserved);
+    [DllImport("user32.dll", CharSet=CharSet.Unicode)]
+    public static extern IntPtr SendMessageTimeout(IntPtr window, uint message, IntPtr wParam, IntPtr lParam, uint flags, uint timeout, out IntPtr result);
+}
+'@
+        }
+        if ([NeoTokyoFontResource]::AddFontResourceEx($installedFont, 0, [IntPtr]::Zero) -lt 1) {
+            throw "Windows could not load font: $installedFont"
+        }
+        $result = [IntPtr]::Zero
+        [NeoTokyoFontResource]::SendMessageTimeout([IntPtr]0xffff, 0x1d, [IntPtr]::Zero, [IntPtr]::Zero, 2, 2000, [ref]$result) | Out-Null
 
         Write-Success "Monofoki Nerd Font installed successfully"
     }
     catch {
-        Write-Error "Failed to install Monofoki Nerd Font: $_"
+        throw "Failed to install Monofoki Nerd Font: $_"
     }
 }
 
@@ -586,19 +606,12 @@ function Install-Git {
         $winget = Get-Command winget -ErrorAction SilentlyContinue
         if ($winget) {
             Write-Info "Using winget to install Git..."
-            winget install Git.Git --silent --accept-source-agreements --accept-package-agreements
+            winget install --id Git.Git --exact --source winget --silent --accept-source-agreements --accept-package-agreements
+            if ($LASTEXITCODE -ne 0) { throw "winget failed to install Git.Git (exit code $LASTEXITCODE)." }
         }
         else {
             Write-Info "Downloading Git installer..."
-            $installerUrl = "https://github.com/git-for-windows/git/releases/latest/download/Git-2.43.0-64-bit.exe"
-            $installerPath = "$env:TEMP\Git-installer.exe"
-
-            Invoke-WebRequest -Uri $installerUrl -OutFile $installerPath
-
-            Write-Info "Installing Git..."
-            Start-Process $installerPath -ArgumentList "/VERYSILENT /NORESTART" -Wait
-
-            Remove-Item $installerPath -Force
+            throw "winget is unavailable. Install Git from https://git-scm.com/download/win and rerun the installer."
         }
 
         # Refresh PATH
@@ -607,7 +620,7 @@ function Install-Git {
         Write-Success "Git installed successfully"
     }
     catch {
-        Write-Error "Failed to install Git: $_"
+        throw "Failed to install Git: $_"
     }
 }
 
@@ -624,19 +637,20 @@ function Backup-ExistingConfiguration {
         }
 
         # Backup PowerShell profile
-        if (Test-Path $PROFILE) {
+        if (Test-Path $script:Config.ProfilePath) {
             Write-Info "Backing up PowerShell profile..."
-            Copy-Item $PROFILE -Destination (Join-Path $script:Config.BackupPath "Microsoft.PowerShell_profile.ps1") -Force
+            Copy-Item $script:Config.ProfilePath -Destination (Join-Path $script:Config.BackupPath "Microsoft.PowerShell_profile.ps1") -Force
         }
 
-        # Backup Windows Terminal settings
+        # Resolve the settings path before attempting a backup.
+        $script:Config.SettingsPath = Get-WindowsTerminalSettingsPath
         if (Test-Path $script:Config.SettingsPath) {
             Write-Info "Backing up Windows Terminal settings..."
             Copy-Item $script:Config.SettingsPath -Destination (Join-Path $script:Config.BackupPath "settings.json") -Force
         }
 
         # Backup Oh My Posh theme
-        $currentTheme = "$env:USERPROFILE\Documents\PowerShell\themes\*.omp.json"
+        $currentTheme = Join-Path $script:Config.ThemePath "*.omp.json"
         if (Test-Path $currentTheme) {
             Write-Info "Backing up Oh My Posh themes..."
             $themesBackup = Join-Path $script:Config.BackupPath "themes"
@@ -647,7 +661,7 @@ function Backup-ExistingConfiguration {
         Write-Success "Backup completed: $($script:Config.BackupPath)"
     }
     catch {
-        Write-Warning "Backup failed: $_"
+        throw "Backup failed; installation stopped before replacing existing configuration: $_"
     }
 }
 
@@ -666,23 +680,22 @@ function Deploy-PowerShellProfile {
         $sourceProfile = Join-Path $script:Config.RepoPath "config\profile_$ProfileType.ps1"
 
         if (-not (Test-Path $sourceProfile)) {
-            Write-Error "Profile file not found: $sourceProfile"
-            return
+            throw "Profile file not found: $sourceProfile"
         }
 
         # Ensure profile directory exists
-        $profileDir = Split-Path $PROFILE -Parent
+        $profileDir = Split-Path $script:Config.ProfilePath -Parent
         if (-not (Test-Path $profileDir)) {
             New-Item -ItemType Directory -Path $profileDir -Force | Out-Null
         }
 
         # Copy profile
-        Copy-Item $sourceProfile -Destination $PROFILE -Force
+        Copy-Item $sourceProfile -Destination $script:Config.ProfilePath -Force
 
         Write-Success "PowerShell profile deployed successfully"
     }
     catch {
-        Write-Error "Failed to deploy PowerShell profile: $_"
+        throw "Failed to deploy PowerShell profile: $_"
     }
 }
 
@@ -769,7 +782,7 @@ function Deploy-WindowsTerminalSettings {
         ) -Force
 
         # ── PowerShell profiles (one per installed version) ─────────────────
-        $allPwsh       = Get-AllPowerShellVersions
+        $allPwsh       = @(Get-AllPowerShellVersions)
         $ps7SourceGuid = "{574e775e-4f2a-5b96-ac1e-a2962a402336}"
         $pwshGuids     = @()
 
@@ -919,14 +932,14 @@ function Deploy-WindowsTerminalSettings {
             if ($p.guid -notin $priorityGuids) { $orderedList += $p }
         }
         $settings.profiles.list = $orderedList
-        Write-Success "Profile order applied: $($orderedList | ForEach-Object { $_.name } | Join-String -Separator ' → ')"
+        Write-Success "Profile order applied: $((($orderedList | ForEach-Object { $_.name }) -join ' → '))"
 
         # ── Save ─────────────────────────────────────────────────────────────
         $settings | ConvertTo-Json -Depth 20 | Set-Content $realPath -Encoding UTF8
         Write-Success "Windows Terminal settings deployed to: $realPath"
     }
     catch {
-        Write-Error "Failed to deploy Windows Terminal settings: $_"
+        throw "Failed to deploy Windows Terminal settings: $_"
     }
 }
 
@@ -937,8 +950,7 @@ function Deploy-OhMyPoshTheme {
         $sourceTheme = Join-Path $script:Config.RepoPath "config\themes\amro.omp.json"
 
         if (-not (Test-Path $sourceTheme)) {
-            Write-Error "Theme file not found: $sourceTheme"
-            return
+            throw "Theme file not found: $sourceTheme"
         }
 
         # Ensure themes directory exists
@@ -953,7 +965,7 @@ function Deploy-OhMyPoshTheme {
         Write-Success "Oh My Posh theme deployed successfully"
     }
     catch {
-        Write-Error "Failed to deploy Oh My Posh theme: $_"
+        throw "Failed to deploy Oh My Posh theme: $_"
     }
 }
 
@@ -992,6 +1004,11 @@ function Show-InstallationModes {
 }
 
 function Start-Installation {
+    foreach ($required in @('config\settings.json', 'config\themes\amro.omp.json', 'config\profile_core.ps1', 'config\profile_productivity.ps1', 'config\profile_poweruser.ps1', 'config\profile_theme_only.ps1', 'fonts\MonofokiNerdFont-Regular.ttf')) {
+        if (-not (Test-Path (Join-Path $script:Config.RepoPath $required))) {
+            throw "Required file missing: $required. Download and extract the complete Windows release ZIP, then run the installer from the extracted folder."
+        }
+    }
     Write-Host ""
     Write-Host "============================================" -ForegroundColor Cyan
     Write-Host "  PowerShell Terminal Setup" -ForegroundColor Cyan
@@ -1219,9 +1236,9 @@ if ($env:NEOTOKYO_TESTING -ne "1") {
         Start-Installation
     }
     catch {
-        Write-Error "Installation failed: $_"
+        Write-Host "Installation failed: $_" -ForegroundColor Red
         Write-Host ""
-        Write-Host "Please report this issue at: https://github.com/yourusername/powershell-setup/issues" -ForegroundColor Yellow
+        Write-Host "Please report this issue at: https://github.com/CristianValverde/neotokyo-powershell-theme/issues" -ForegroundColor Yellow
         exit 1
     }
 }
