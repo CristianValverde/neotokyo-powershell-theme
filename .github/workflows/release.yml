@@ -70,12 +70,20 @@ jobs:
           Compress-Archive -Path $include -DestinationPath $zipName -Force
           Write-Host "Created: $zipName"
 
+      - name: Create macOS release zip
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}"
+          Compress-Archive -Path macos -DestinationPath "NeoTokyo-macOS-$tag.zip" -Force
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           name: "NeoTokyo Terminal Theme ${{ github.ref_name }}"
+          body_path: macos/RELEASE-NOTES.md
           generate_release_notes: true
           files: |
             NeoTokyo-Setup-${{ github.ref_name }}.zip
+            NeoTokyo-macOS-${{ github.ref_name }}.zip
             NeoTokyo-Setup.exe
             NeoTokyo-Uninstall.exe

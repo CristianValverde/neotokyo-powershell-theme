@@ -1,0 +1,104 @@
+{
+  "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
+  "version": 4,
+  "blocks": [
+    {
+      "type": "prompt",
+      "alignment": "left",
+      "segments": [
+        {
+          "type": "session",
+          "style": "plain",
+          "foreground": "#62D6C8",
+          "template": " {{ .UserName }}{{ if .SSHSession }}@{{ .HostName }}{{ end }}"
+        },
+        {
+          "type": "path",
+          "style": "plain",
+          "foreground": "#5B8CFF",
+          "template": "   {{ .Path }} ",
+          "options": {
+            "style": "full",
+            "folder_separator_icon": "/",
+            "mapped_locations_enabled": true
+          }
+        },
+        {
+          "type": "git",
+          "style": "plain",
+          "foreground": "#A78BFA",
+          "template": "  {{ .HEAD }}{{ if .Working.Changed }} <#FFD866>!{{ .Working.String }}</>{{ end }}{{ if .Staging.Changed }} <#5AF78E>+{{ .Staging.String }}</>{{ end }}{{ if gt .StashCount 0 }}  {{ .StashCount }}{{ end }} {{ .BranchStatus }} "
+        },
+        {
+          "type": "python",
+          "style": "plain",
+          "foreground": "#FFD866",
+          "template": "{{ if .Venv }}  {{ .Venv }} {{ end }}",
+          "options": {
+            "display_mode": "environment",
+            "fetch_version": false,
+            "fetch_virtual_env": true
+          }
+        }
+      ]
+    },
+    {
+      "type": "rprompt",
+      "alignment": "right",
+      "segments": [
+        {
+          "type": "time",
+          "style": "plain",
+          "foreground": "#89DDFF",
+          "template": "  {{ .CurrentDate | date .Format }} ",
+          "options": {
+            "time_format": "15:04:05"
+          }
+        },
+        {
+          "type": "executiontime",
+          "style": "plain",
+          "foreground": "#E0AF68",
+          "template": "  {{ .FormattedMs }} ",
+          "options": {
+            "threshold": 300,
+            "style": "austin"
+          }
+        }
+      ]
+    },
+    {
+      "type": "prompt",
+      "alignment": "left",
+      "newline": true,
+      "segments": [
+        {
+          "type": "status",
+          "style": "plain",
+          "foreground": "#FF5F87",
+          "template": "✘ {{ .Code }} ",
+          "options": {
+            "always_enabled": false
+          }
+        },
+        {
+          "type": "root",
+          "style": "plain",
+          "foreground": "#D3869B",
+          "template": " "
+        },
+        {
+          "type": "text",
+          "style": "plain",
+          "foreground": "#FF79C6",
+          "template": "# "
+        }
+      ]
+    }
+  ],
+  "console_title_template": "NeoTokyo · {{ .Folder }}",
+  "secondary_prompt": {
+    "foreground": "#BD93F9",
+    "template": "… "
+  }
+}
