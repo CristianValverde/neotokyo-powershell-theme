@@ -38,8 +38,9 @@ This project uses the following open-source projects:
 
 ### Monofoki Nerd Font
 - **Part of:** Nerd Fonts project
-- **Based on:** Iosevka
-- **License:** SIL Open Font License (OFL)
+- **Font author:** Marvin Dostal
+- **License:** SIL Open Font License (OFL); see fonts/LICENSE-Monofoki
+- **Patched glyphs:** see fonts/LICENSE-nerd-font and fonts/license-audit-nerd-font.md
 
 ### Terminal-Icons
 - **Author:** Brandon Olin
@@ -55,3 +56,20 @@ This project uses the following open-source projects:
 - **Author:** Microsoft
 - **Repository:** https://github.com/PowerShell/PowerShell
 - **License:** MIT License
+
+### macOS tools
+
+Homebrew, iTerm2, Zsh, zsh-autosuggestions, zsh-syntax-highlighting,
+zsh-completions, fzf, zoxide, eza, bat and ripgrep are separate projects
+installed or used on macOS. See each project's repository and license.
+Homebrew: https://github.com/Homebrew/brew
+iTerm2: https://github.com/gnachman/iTerm2
+Zsh: https://www.zsh.org/
+zsh-autosuggestions: https://github.com/zsh-users/zsh-autosuggestions
+zsh-syntax-highlighting: https://github.com/zsh-users/zsh-syntax-highlighting
+zsh-completions: https://github.com/zsh-users/zsh-completions
+fzf: https://github.com/junegunn/fzf
+zoxide: https://github.com/ajeetdsouza/zoxide
+eza: https://github.com/eza-community/eza
+bat: https://github.com/sharkdp/bat
+ripgrep: https://github.com/BurntSushi/ripgrep

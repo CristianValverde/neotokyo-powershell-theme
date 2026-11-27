@@ -168,7 +168,31 @@ Choose the perfect setup for your needs:
 
 ## 📦 What Gets Installed
 
-### Core Components
+### macOS: iTerm2 + Zsh
+
+The [macOS installer](macos/README.md) checks for Homebrew and iTerm2 and installs them if absent. It installs missing command-line tools with Homebrew and copies the bundled fonts and configuration. Internet access is needed; the official Homebrew installer may request confirmation, a password, or Apple Command Line Tools.
+
+| Component | Purpose | Installation |
+|-----------|---------|--------------|
+| Homebrew | Package manager | Official installer, if missing |
+| iTerm2 | Terminal application and visual profile | Homebrew cask, if missing |
+| Zsh | Interactive shell | Uses macOS `/bin/zsh` |
+| Oh My Posh | NeoTokyo prompt, Git and timing | Homebrew |
+| Monofoki Nerd Font | Prompt and file icons | Four bundled font variants |
+| zsh-autosuggestions | History and completion suggestions | Homebrew |
+| zsh-syntax-highlighting | Command-line colors | Homebrew |
+| zsh-completions | Extra completion definitions | Homebrew |
+| fzf | Interactive history and file search | Homebrew |
+| zoxide | Navigation to visited directories | Homebrew |
+| eza | File listings with icons | Homebrew |
+| bat | Syntax-highlighted file previews | Homebrew |
+| ripgrep | File-name search with `ff` | Homebrew |
+
+The installer adds a block to `${ZDOTDIR:-$HOME}/.zshrc`, copies the shell configuration and prompt to `${XDG_CONFIG_HOME:-$HOME/.config}/neotokyo`, and places the iTerm2 dynamic profile in `~/Library/Application Support/iTerm2/DynamicProfiles/NeoTokyo.json`. It sets the default iTerm2 profile and keeps backups under `${XDG_STATE_HOME:-$HOME/.local/state}/neotokyo/backups`. Git, Docker and Kubernetes are not installed by the macOS installer; their shortcuts work when those tools are available. The visual profile targets iTerm2; Zsh features also load in other interactive terminals.
+
+### Windows: PowerShell + Windows Terminal
+
+#### Core Components
 
 | Component | Version | Description | Auto-Install |
 |-----------|---------|-------------|--------------|
@@ -177,7 +201,7 @@ Choose the perfect setup for your needs:
 | **Oh My Posh** | Latest | Prompt theme engine | ✅ Yes |
 | **Monofoki Nerd Font** | Latest | Patched font with icons | ✅ Yes |
 
-### Optional Components
+#### Optional Components
 
 | Component | Default | Description | Modes |
 |-----------|---------|-------------|-------|
@@ -185,7 +209,7 @@ Choose the perfect setup for your needs:
 | **Terminal-Icons** | Productivity+ | Colorful file/folder icons | Productivity, Power User |
 | **Command Prompt** | Ask | Classic cmd.exe profile | Custom |
 
-### Configuration Files
+#### Configuration Files
 
 - **`Microsoft.PowerShell_profile.ps1`** - PowerShell profile with optimizations
 - **`settings.json`** - Windows Terminal configuration
@@ -203,6 +227,12 @@ The installer intelligently handles PowerShell versions:
 | **Windows PowerShell 5.1** | ➡️ Configures separate profile with lighter blue tab color |
 
 ## 🎯 Manual Installation
+
+### macOS
+
+The supported path is `bash macos/install.sh`; it handles dependencies, backups and the iTerm2 default profile. For manual setup or a pre-existing configuration, see [macOS manual installation](macos/README.md#instalación-manual-en-macos). The manual steps require Homebrew, iTerm2, font setup, Zsh initialization and a separate iTerm2 profile selection.
+
+### Windows
 
 If you prefer to install manually or the automated installer fails:
 
@@ -234,7 +264,7 @@ winget install JanDeDobbeleer.OhMyPosh
 ### Step 4: Install Monofoki Nerd Font
 
 1. Navigate to `fonts/` folder
-2. Right-click `Monofoki-Nerd-Font-Complete.ttf`
+2. Right-click `MonofokiNerdFont-Regular.ttf` (and optionally the bold and italic variants)
 3. Click "Install for all users"
 
 ### Step 5: Install Terminal-Icons (Optional)
@@ -269,6 +299,8 @@ Close all Windows Terminal windows and reopen.
 </details>
 
 ## 🔍 Troubleshooting
+
+For macOS, see [checks and troubleshooting](macos/README.md#comprobaciones-rápidas). The following items apply to Windows.
 
 ### Profile loads slowly (> 5 seconds)
 
@@ -334,7 +366,13 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 ## 🎨 Customization for Enthusiasts
 
-Want to make this setup truly yours? Here's how to customize everything!
+### macOS
+
+Use `edit-profile` to edit `${XDG_CONFIG_HOME:-$HOME/.config}/neotokyo/local.zsh`; `reload` starts a new Zsh session. Change the prompt in `neotokyo.omp.json` and the iTerm2 colors, font or transparency in the dynamic profile under `~/Library/Application Support/iTerm2/DynamicProfiles/`. Duplicate the profile in iTerm2 for UI edits that survive reinstallations. [The macOS customization guide](macos/README.md#ajustes-personales) explains these paths, shortcuts and the differences between the shell and the terminal profile.
+
+### Windows
+
+The following examples customize the PowerShell and Windows Terminal edition.
 
 ### 🔤 Changing Nerd Fonts
 
@@ -628,26 +666,18 @@ Set-Alias -Name v -Value code
 
 ## 📜 Credits & Licenses
 
-This project builds upon the amazing work of these open-source projects:
+NeoTokyo's project code uses the [MIT license](LICENSE). Its dependencies are separate projects and retain their own licenses. macOS tools are installed through Homebrew; they are not bundled as executables in this repository. Windows may install or use additional tools depending on the chosen mode.
 
-| Project | Author | License | Repository |
-|---------|--------|---------|------------|
-| **Oh My Posh** | Jan De Dobbeleer | MIT | [github.com/JanDeDobbeleer/oh-my-posh](https://github.com/JanDeDobbeleer/oh-my-posh) |
-| **Nerd Fonts** | Ryan L McIntyre | MIT | [github.com/ryanoasis/nerd-fonts](https://github.com/ryanoasis/nerd-fonts) |
-| **Monofoki** | Iosevka / Nerd Fonts | SIL OFL 1.1 | Part of Nerd Fonts project |
-| **Terminal-Icons** | Brandon Olin | MIT | [github.com/devblackops/Terminal-Icons](https://github.com/devblackops/Terminal-Icons) |
-| **Windows Terminal** | Microsoft | MIT | [github.com/microsoft/terminal](https://github.com/microsoft/terminal) |
-| **PowerShell** | Microsoft | MIT | [github.com/PowerShell/PowerShell](https://github.com/PowerShell/PowerShell) |
-
-### Font License
-
-**Monofoki Nerd Font** is licensed under the **SIL Open Font License (OFL) 1.1**, which allows:
-- ✅ Free use (personal and commercial)
-- ✅ Redistribution
-- ✅ Modification
-- ❌ Selling the font by itself
-
-Full license: https://scripts.sil.org/OFL
+| Project | Used by | License / source |
+|---------|---------|------------------|
+| [Oh My Posh](https://github.com/JanDeDobbeleer/oh-my-posh) | Windows and macOS prompt | [MIT](https://github.com/JanDeDobbeleer/oh-my-posh/blob/main/LICENSE) |
+| [Monofoki Nerd Font](https://github.com/ryanoasis/nerd-fonts) | Bundled fonts and icons | Monofoki by Marvin Dostal, [SIL OFL 1.1](fonts/LICENSE-Monofoki); see the [Nerd Fonts license](fonts/LICENSE-nerd-font) and [glyph license audit](fonts/license-audit-nerd-font.md) |
+| [PowerShell](https://github.com/PowerShell/PowerShell) and [Windows Terminal](https://github.com/microsoft/terminal) | Windows | See the respective project licenses |
+| [Terminal-Icons](https://github.com/devblackops/Terminal-Icons) | Windows, optional | See its repository license |
+| [Homebrew](https://github.com/Homebrew/brew) | macOS package manager | [BSD-2-Clause](https://github.com/Homebrew/brew/blob/main/LICENSE.txt) |
+| [iTerm2](https://github.com/gnachman/iTerm2) and [Zsh](https://www.zsh.org/) | macOS terminal and shell | See their respective project licenses |
+| [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions), [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting), [zsh-completions](https://github.com/zsh-users/zsh-completions) | macOS editing and completion | See each repository's license |
+| [fzf](https://github.com/junegunn/fzf), [zoxide](https://github.com/ajeetdsouza/zoxide), [eza](https://github.com/eza-community/eza), [bat](https://github.com/sharkdp/bat), [ripgrep](https://github.com/BurntSushi/ripgrep) | macOS search, navigation and listings | See each repository's license; eza uses [EUPL-1.2](https://github.com/eza-community/eza/blob/main/LICENSE.txt) |
 
 ---
 
