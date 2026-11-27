@@ -56,11 +56,11 @@ The Windows instructions below apply to PowerShell and Windows Terminal. For mac
 ### Windows installation
 
 1. Download the **Windows ZIP** (`NeoTokyo-Setup-v*.zip`) from [Releases](https://github.com/CristianValverde/neotokyo-powershell-theme/releases), or clone the repository. Extract the entire ZIP before running anything: the installer needs the bundled `config` and `fonts` folders.
-2. Run `install.bat` from the extracted folder and approve the Windows administrator prompt. Alternatively, open an elevated PowerShell in that folder and run `powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1`.
+2. Run `NeoTokyo-Setup.exe` or `install.bat` from the extracted folder and approve the Windows administrator prompt. Alternatively, open an elevated PowerShell in that folder and run `powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1`.
 3. If PowerShell 7 is missing, the installer installs it and exits. Close it and run the installer again to complete setup. Choose an installation mode and follow the prompts.
 4. Open Windows Terminal and select the PowerShell 7 profile. An internet connection is needed for missing dependencies. If a dependency installation fails, resolve the reported error and rerun the installer.
 
-The standalone setup EXE requires the same `config` and `fonts` folders beside it; use the complete ZIP rather than downloading the EXE alone. The installer backs up existing configuration before replacing it.
+Keep the `config` and `fonts` folders beside the setup EXE; it is included in the complete Windows ZIP along with this README and the license. The installer backs up existing configuration before replacing it. The EXE was tested on Windows 11 ARM64 in Parallels with dependencies already installed; the clean installation test used `install.bat`.
 
 ## 🎨 Installation Modes
 
