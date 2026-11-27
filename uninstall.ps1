@@ -1,4 +1,4 @@
-#Requires -RunAsAdministrator
+﻿#Requires -RunAsAdministrator
 
 <#
 .SYNOPSIS
@@ -42,8 +42,12 @@ param(
 $ErrorActionPreference = "Stop"
 $ProgressPreference = "SilentlyContinue"
 
+$documentsPath = [Environment]::GetFolderPath('MyDocuments')
+if (-not $documentsPath) { $documentsPath = Join-Path $env:USERPROFILE 'Documents' }
+$powerShellDirectory = Join-Path $documentsPath 'PowerShell'
+
 $script:Config = @{
-    ProfilePath   = $PROFILE
+    ProfilePath   = Join-Path $powerShellDirectory "Microsoft.PowerShell_profile.ps1"
     SettingsPath  = $(
         # Same detection logic as the installer: prefer the Store path
         $storePath   = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
@@ -52,7 +56,7 @@ $script:Config = @{
         elseif (Test-Path $legacyPath) { $legacyPath }
         else   { $storePath }   # default to Store path even if not yet created
     )
-    ThemePath     = "$env:USERPROFILE\Documents\PowerShell\themes"
+    ThemePath     = Join-Path $powerShellDirectory "themes"
     BackupPattern = "$env:USERPROFILE\PowerShell_Backup_*"
 }
 

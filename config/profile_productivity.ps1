@@ -1,4 +1,4 @@
-# ============================================
+﻿# ============================================
 # PowerShell Profile - Productivity Edition
 # Enhanced setup with productivity features
 # ============================================
@@ -69,7 +69,7 @@ if ($env:WT_SESSION) {
 # Oh My Posh
 # ============================================
 
-$omp_config = "$env:USERPROFILE\Documents\PowerShell\themes\amro.omp.json"
+$omp_config = Join-Path ([Environment]::GetFolderPath('MyDocuments')) 'PowerShell\themes\amro.omp.json'
 if (Test-Path $omp_config) {
     oh-my-posh init pwsh --config $omp_config | Invoke-Expression
 }

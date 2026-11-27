@@ -46,31 +46,21 @@ The Windows instructions below apply to PowerShell and Windows Terminal. For mac
 ## 📋 Prerequisites
 
 - **Operating System:** Windows 10 (build 19041+) or Windows 11
-- **Architecture:** x64 (64-bit)
+- **Architecture:** x64 (64-bit); Windows 11 ARM64 was also tested in Parallels with the Productivity mode
 - **Internet Connection:** Required for downloading dependencies
 - **Permissions:** Administrator rights (for installing fonts and applications)
 - **PowerShell:** Windows PowerShell 5.1+ (PowerShell 7.6+ recommended)
 
 ## ⚡ Quick Start
 
-### Express Installation (Recommended)
+### Windows installation
 
-1. **Download** this repository:
-   ```powershell
-   git clone https://github.com/CristianValverde/neotokyo-powershell-theme.git
-   cd neotokyo-powershell-theme
-   ```
+1. Download the **Windows ZIP** (`NeoTokyo-Setup-v*.zip`) from [Releases](https://github.com/CristianValverde/neotokyo-powershell-theme/releases), or clone the repository. Extract the entire ZIP before running anything: the installer needs the bundled `config` and `fonts` folders.
+2. Run `install.bat` from the extracted folder and approve the Windows administrator prompt. Alternatively, open an elevated PowerShell in that folder and run `powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1`.
+3. If PowerShell 7 is missing, the installer installs it and exits. Close it and run the installer again to complete setup. Choose an installation mode and follow the prompts.
+4. Open Windows Terminal and select the PowerShell 7 profile. An internet connection is needed for missing dependencies. If a dependency installation fails, resolve the reported error and rerun the installer.
 
-2. **Run** the installer:
-   ```powershell
-   .\install.ps1
-   ```
-
-3. **Choose** your installation mode when prompted
-
-4. **Wait** 2-3 minutes while everything installs automatically
-
-5. **Done!** Open Windows Terminal and enjoy your new setup
+The standalone setup EXE requires the same `config` and `fonts` folders beside it; use the complete ZIP rather than downloading the EXE alone. The installer backs up existing configuration before replacing it.
 
 ## 🎨 Installation Modes
 
@@ -279,11 +269,13 @@ Install-Module -Name Terminal-Icons -Scope CurrentUser -Force
 # Choose your profile variant
 $profileVariant = "profile_productivity.ps1"  # or profile_core.ps1, profile_poweruser.ps1, profile_theme_only.ps1
 
-# Copy PowerShell Profile
+# Run these commands in PowerShell 7, from the extracted project directory.
+# Copy the profile to the PowerShell 7 user profile (create its directory if needed).
+New-Item -ItemType Directory -Path (Split-Path $PROFILE) -Force | Out-Null
 Copy-Item "config/$profileVariant" -Destination $PROFILE -Force
 
 # Oh My Posh Theme
-$themePath = "$env:USERPROFILE\Documents\PowerShell\themes"
+$themePath = Join-Path ([Environment]::GetFolderPath('MyDocuments')) 'PowerShell\themes'
 New-Item -ItemType Directory -Path $themePath -Force
 Copy-Item "config/themes/amro.omp.json" -Destination "$themePath\amro.omp.json" -Force
 
@@ -320,7 +312,7 @@ For macOS, see [checks and troubleshooting](macos/README.md#comprobaciones-rápi
 **Solution:**
 ```powershell
 # Validate JSON syntax
-Get-Content "$env:USERPROFILE\Documents\PowerShell\themes\amro.omp.json" | ConvertFrom-Json
+Get-Content (Join-Path ([Environment]::GetFolderPath('MyDocuments')) 'PowerShell\themes\amro.omp.json') | ConvertFrom-Json
 ```
 
 ### Icons not displaying correctly
@@ -330,6 +322,7 @@ Get-Content "$env:USERPROFILE\Documents\PowerShell\themes\amro.omp.json" | Conve
 **Solution:**
 1. Verify font is installed: Settings → Fonts in Windows
 2. Check Windows Terminal settings: Settings → Defaults → Font face → "Monofoki Nerd Font"
+3. Close all Windows Terminal windows and reopen them. If the warning persists, rerun the installer to register and load the bundled font.
 
 ### PowerShell execution policy error
 

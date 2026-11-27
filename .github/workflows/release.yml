@@ -64,7 +64,9 @@ jobs:
             "install.ps1",
             "uninstall.ps1",
             "config",
-            "fonts"
+            "fonts",
+            "README.md",
+            "LICENSE"
           )
 
           Compress-Archive -Path $include -DestinationPath $zipName -Force
@@ -85,5 +87,3 @@ jobs:
           files: |
             NeoTokyo-Setup-${{ github.ref_name }}.zip
             NeoTokyo-macOS-${{ github.ref_name }}.zip
-            NeoTokyo-Setup.exe
-            NeoTokyo-Uninstall.exe
